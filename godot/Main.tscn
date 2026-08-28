@@ -1,14 +1,14 @@
 [gd_scene load_steps=10 format=3]
 
-[ext_resource type="Script" path="res://scripts/GameManager.gd" id="1_gm"]
-[ext_resource type="Script" path="res://scripts/PalaceLevel.gd" id="2_palace"]
-[ext_resource type="Script" path="res://scripts/DragonNPC.gd" id="3_dragon"]
-[ext_resource type="Script" path="res://scripts/PlayerCombat.gd" id="4_player"]
-[ext_resource type="Script" path="res://scripts/GameHUD.gd" id="5_hud"]
-[ext_resource type="Script" path="res://scripts/WeaponHold.gd" id="6_weapon"]
-[ext_resource type="Script" path="res://scripts/SkyDome.gd" id="7_sky"]
-[ext_resource type="Script" path="res://scripts/NpcDirector.gd" id="8_ai"]
-[ext_resource type="Script" path="res://scripts/WorldBootstrap.gd" id="9_boot"]
+[ext_resource type="Script" path="res://godot/GameManager.gd" id="1_gm"]
+[ext_resource type="Script" path="res://godot/PalaceLevel.gd" id="2_palace"]
+[ext_resource type="Script" path="res://godot/DragonNPC.gd" id="3_dragon"]
+[ext_resource type="Script" path="res://godot/PlayerCombat.gd" id="4_player"]
+[ext_resource type="Script" path="res://godot/GameHUD.gd" id="5_hud"]
+[ext_resource type="Script" path="res://godot/WeaponHold.gd" id="6_weapon"]
+[ext_resource type="Script" path="res://godot/SkyDome.gd" id="7_sky"]
+[ext_resource type="Script" path="res://godot/NpcDirector.gd" id="8_ai"]
+[ext_resource type="Script" path="res://godot/WorldBootstrap.gd" id="9_boot"]
 
 [sub_resource type="BoxShape3D" id="floor"]
 size = Vector3(80, 0.4, 80)
@@ -100,3 +100,8 @@ text = "Dragon  420 / 420"
 
 [node name="Status" type="Label" parent="HUD/Root"]
 text = "Enter the palace."
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.86, -0.35, 0.37, 0, 0.73, 0.68, -0.5, -0.59, 0.63, 0, 12, 0)
+light_color = Color(1, 0.52, 0.42, 1)
+light_energy = 1.15
