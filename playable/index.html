@@ -6,19 +6,48 @@
   <title>Crimson Sovereign</title>
   <style>
     html, body { margin: 0; height: 100%; overflow: hidden; background: #050308; font-family: Georgia, serif; color: #f3d4c4; }
-    #hud { position: fixed; left: 18px; top: 14px; z-index: 5; text-shadow: 0 2px 8px #000; }
+    #hud { position: fixed; left: 18px; top: 14px; z-index: 5; text-shadow: 0 2px 8px #000; display: none; }
     #hud b { color: #ff4a32; }
-    #status { position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); z-index: 5; }
-    #end { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.72); z-index: 8; place-items: center; }
-    #end.show { display: grid; }
-    #end button { margin-top: 16px; padding: 10px 22px; background: #8a1c14; color: #fff; border: 0; cursor: pointer; }
+    #status { position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); z-index: 5; display: none; }
+    .overlay { position: fixed; inset: 0; background: rgba(4, 2, 6, .88); z-index: 9; display: grid; place-items: center; text-align: center; }
+    .overlay.hidden { display: none; }
+    h1 { font-size: 2.4rem; margin: 0 0 8px; color: #ff4a32; }
+    p { max-width: 460px; margin: 8px auto 18px; line-height: 1.45; }
+    button { margin: 6px; padding: 10px 22px; background: #8a1c14; color: #fff; border: 0; cursor: pointer; font: inherit; }
+    button.ghost { background: transparent; border: 1px solid #8a1c14; }
+    canvas { display: block; }
   </style>
 </head>
 <body>
+  <div id="menu" class="overlay">
+    <div>
+      <h1>Crimson Sovereign</h1>
+      <p>One palace. One dragon. Wake it at the gold throne. Survive fire and fangs.</p>
+      <button id="btnStart">Begin</button>
+      <button class="ghost" id="btnHelp">How to play</button>
+    </div>
+  </div>
+  <div id="help" class="overlay hidden">
+    <div>
+      <h1>How to play</h1>
+      <p>WASD move. Space attack. Walk to the gold throne to wake the dragon. Keep your health above zero.</p>
+      <button id="btnHelpBack">Back</button>
+    </div>
+  </div>
   <div id="hud">Player <b id="php">100</b> / 100<br />Dragon <b id="dhp">420</b> / 420</div>
-  <div id="status">WASD move · SPACE attack · reach the gold throne to wake the dragon</div>
-  <div id="end"><div class="box"><h1 id="endtitle"></h1><button onclick="location.reload()">Play again</button></div></div>
-  <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+  <div id="status">Reach the gold throne.</div>
+  <div id="end" class="overlay hidden">
+    <div>
+      <h1 id="endtitle"></h1>
+      <button onclick="location.reload()">Play again</button>
+    </div>
+  </div>
+  <script type="importmap">
+  { "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+  } }
+  </script>
   <script type="module" src="./game.js"></script>
 </body>
 </html>
