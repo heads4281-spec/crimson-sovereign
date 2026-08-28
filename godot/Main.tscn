@@ -1,0 +1,89 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/GameManager.gd" id="1_gm"]
+[ext_resource type="Script" path="res://scripts/PalaceLevel.gd" id="2_palace"]
+[ext_resource type="Script" path="res://scripts/DragonNPC.gd" id="3_dragon"]
+[ext_resource type="Script" path="res://scripts/PlayerCombat.gd" id="4_player"]
+[ext_resource type="Script" path="res://scripts/GameHUD.gd" id="5_hud"]
+[ext_resource type="Script" path="res://scripts/WeaponHold.gd" id="6_weapon"]
+
+[sub_resource type="BoxShape3D" id="floor"]
+size = Vector3(50, 0.4, 50)
+
+[sub_resource type="CapsuleShape3D" id="player_shape"]
+radius = 0.4
+height = 1.6
+
+[sub_resource type="BoxShape3D" id="dragon_shape"]
+size = Vector3(3.2, 2.4, 4.6)
+
+[node name="Main" type="Node3D"]
+
+[node name="GameManager" type="Node" parent="."]
+script = ExtResource("1_gm")
+player_path = NodePath("../Palace/Player")
+dragon_path = NodePath("../Palace/Dragon")
+palace_path = NodePath("../Palace")
+
+[node name="Palace" type="Node3D" parent="."]
+script = ExtResource("2_palace")
+player_path = NodePath("Player")
+dragon_path = NodePath("Dragon")
+
+[node name="Floor" type="StaticBody3D" parent="Palace"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Palace/Floor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2, 0)
+shape = SubResource("floor")
+
+[node name="PalaceAnchor" type="Node3D" parent="Palace"]
+
+[node name="Player" type="CharacterBody3D" parent="Palace"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 8)
+script = ExtResource("4_player")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Palace/Player"]
+shape = SubResource("player_shape")
+
+[node name="Camera3D" type="Camera3D" parent="Palace/Player"]
+transform = Transform3D(1, 0, 0, 0, 0.92, 0.39, 0, -0.39, 0.92, 0, 2.4, 6.5)
+current = true
+
+[node name="WeaponHold" type="Node3D" parent="Palace/Player"]
+script = ExtResource("6_weapon")
+
+[node name="Dragon" type="CharacterBody3D" parent="Palace"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10.2, 0)
+script = ExtResource("3_dragon")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Palace/Dragon"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
+shape = SubResource("dragon_shape")
+
+[node name="Model" type="Node3D" parent="Palace/Dragon"]
+
+[node name="HUD" type="CanvasLayer" parent="."]
+script = ExtResource("5_hud")
+player_path = NodePath("../Palace/Player")
+dragon_path = NodePath("../Palace/Dragon")
+manager_path = NodePath("../GameManager")
+
+[node name="Root" type="VBoxContainer" parent="HUD"]
+offset_left = 24.0
+offset_top = 20.0
+offset_right = 480.0
+offset_bottom = 140.0
+
+[node name="PlayerHP" type="Label" parent="HUD/Root"]
+text = "Player  100 / 100"
+
+[node name="DragonHP" type="Label" parent="HUD/Root"]
+text = "Dragon  420 / 420"
+
+[node name="Status" type="Label" parent="HUD/Root"]
+text = "Enter the palace."
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.86, -0.35, 0.37, 0, 0.73, 0.68, -0.5, -0.59, 0.63, 0, 12, 0)
+light_color = Color(1, 0.52, 0.42, 1)
+light_energy = 1.35
