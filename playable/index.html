@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crimson Sovereign</title>
+  <style>
+    html, body { margin: 0; height: 100%; overflow: hidden; background: #050308; font-family: Georgia, serif; color: #f3d4c4; }
+    #hud { position: fixed; left: 18px; top: 14px; z-index: 5; text-shadow: 0 2px 8px #000; }
+    #hud b { color: #ff4a32; }
+    #status { position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); z-index: 5; }
+    #end { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.72); z-index: 8; place-items: center; }
+    #end.show { display: grid; }
+    #end button { margin-top: 16px; padding: 10px 22px; background: #8a1c14; color: #fff; border: 0; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div id="hud">Player <b id="php">100</b> / 100<br />Dragon <b id="dhp">420</b> / 420</div>
+  <div id="status">WASD move · SPACE attack · reach the gold throne to wake the dragon</div>
+  <div id="end"><div class="box"><h1 id="endtitle"></h1><button onclick="location.reload()">Play again</button></div></div>
+  <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+  <script type="module" src="./game.js"></script>
+</body>
+</html>
