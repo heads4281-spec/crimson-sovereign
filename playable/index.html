@@ -22,19 +22,23 @@
   <div id="menu" class="overlay">
     <div>
       <h1>Crimson Sovereign</h1>
-      <p>One palace. One dragon. Wake it at the gold throne. Survive fire and fangs.</p>
-      <button id="btnStart">Begin</button>
+      <p>One palace. Up to 100 players on one relay. Wake the dragon at the gold throne.</p>
+      <button id="btnStart">Begin solo</button>
+      <button id="btnOnline">Online (100)</button>
+      <div id="onlineRow" style="margin-top:10px">
+        <input id="roomCode" value="palace" maxlength="24" style="padding:8px;background:#1a0a0c;color:#f3d4c4;border:1px solid #8a1c14;width:140px" />
+      </div>
       <button class="ghost" id="btnHelp">How to play</button>
     </div>
   </div>
   <div id="help" class="overlay hidden">
     <div>
       <h1>How to play</h1>
-      <p>WASD move. Space attack. Walk to the gold throne to wake the dragon. Keep your health above zero.</p>
+      <p>WASD move. Space attack. Walk to the gold throne to wake the dragon. Online shares the palace with up to 100 players (host runs the dragon).</p>
       <button id="btnHelpBack">Back</button>
     </div>
   </div>
-  <div id="hud">Player <b id="php">100</b> / 100<br />Dragon <b id="dhp">420</b> / 420</div>
+  <div id="hud">Player <b id="php">100</b> / 100<br />Dragon <b id="dhp">420</b> / 420<br /><span id="netline">Solo</span></div>
   <div id="status">Reach the gold throne.</div>
   <div id="end" class="overlay hidden">
     <div>
