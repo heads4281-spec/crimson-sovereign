@@ -4,6 +4,7 @@ import { instanceRepeatedMeshes, makeBoltPool } from "./instancing.js";
 import { Loadout } from "./loadout.js";
 import { NpcDirector } from "./npc-director.js";
 import { makeSky } from "./sky.js";
+import { PalaceNet } from "./net.js";
 
 const $ = (id) => document.getElementById(id);
 const menu = $("menu"), help = $("help"), hud = $("hud"), statusEl = $("status"), endEl = $("end");
@@ -29,10 +30,22 @@ function makeAudio() {
 
 $("btnHelp").onclick = () => help.classList.remove("hidden");
 $("btnHelpBack").onclick = () => help.classList.add("hidden");
-$("btnStart").onclick = () => {
+const net = new PalaceNet();
+async function begin(online) {
   audio = makeAudio(); audio.start(); started = true;
   menu.classList.add("hidden"); hud.style.display = "block"; statusEl.style.display = "block";
-};
+  if (online) {
+    try {
+      const room = $("roomCode").value.trim() || "palace";
+      await net.join(room, "Sovereign");
+      $("netline").textContent = `Online ${net.n}/${net.max} · room ${room}` + (net.isHost ? " · host" : "");
+    } catch (err) {
+      $("netline").textContent = "Online failed — solo";
+    }
+  }
+}
+$("btnStart").onclick = () => begin(false);
+$("btnOnline").onclick = () => begin(true);
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x1a0208);
@@ -89,6 +102,28 @@ cap.name = "fallbackBody";
 player.mesh.add(cap);
 player.mesh.position.set(8, 1.1, 18);
 scene.add(player.mesh);
+
+const remoteDummy = new THREE.Object3D();
+const remotes = new THREE.InstancedMesh(
+  new THREE.CapsuleGeometry(0.38, 1.05, 4, 8),
+  new THREE.MeshStandardMaterial({ color: 0xc45a48, emissive: 0x5a1210, emissiveIntensity: 0.4, roughness: 0.7 }),
+  100,
+);
+remotes.count = 0;
+remotes.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+remotes.frustumCulled = false;
+scene.add(remotes);
+function drawRemotes(list) {
+  remotes.count = Math.min(100, list.length);
+  list.forEach((row, i) => {
+    if (i >= 100) return;
+    remoteDummy.position.set(row[1], row[2] || 1.1, row[3]);
+    remoteDummy.rotation.set(0, row[4] || 0, 0);
+    remoteDummy.updateMatrix();
+    remotes.setMatrixAt(i, remoteDummy.matrix);
+  });
+  remotes.instanceMatrix.needsUpdate = true;
+}
 
 const dragon = { hp: 420, alive: true, spitCd: 0, biteCd: 0, angle: 0, woke: false, mesh: new THREE.Group() };
 const wingL = new THREE.Mesh(new THREE.ConeGeometry(0.2, 2.6, 3), new THREE.MeshStandardMaterial({ color: 0x7a1210 }));
@@ -234,9 +269,32 @@ function loop() {
       const next = player.mesh.position.clone().add(move);
       if (!blocked(next)) player.mesh.position.copy(next);
     }
-    if (keys.Space) attack();
-    tickDragon(dt);
-    npcs.tick(dt, player.mesh.position, hurtPlayer);
+    if (keys.Space) { attack(); net.pendingAtk = true; }
+    const simulate = !net.online || net.isHost;
+    if (simulate) {
+      tickDragon(dt);
+      npcs.tick(dt, player.mesh.position, hurtPlayer);
+    } else if (net.world && net.world.dragon) {
+      const d = net.world.dragon;
+      dragon.mesh.position.set(d.x, d.y, d.z);
+      dragon.hp = d.hp;
+      dragon.alive = d.hp > 0;
+      dragon.woke = !!d.woke;
+      $("dhp").textContent = dragon.hp;
+      if (net.world.over && !over) end(!!net.world.win);
+    }
+    if (net.online) {
+      const yaw = player.mesh.rotation.y;
+      net.tick(dt, {
+        x: player.mesh.position.x, y: player.mesh.position.y, z: player.mesh.position.z, yaw, hp: player.hp,
+      }, simulate ? {
+        dragon: { x: dragon.mesh.position.x, y: dragon.mesh.position.y, z: dragon.mesh.position.z, hp: dragon.hp, woke: dragon.woke ? 1 : 0 },
+        npcs: npcs.npcs.map((n) => [n.mesh.position.x, n.mesh.position.z, n.hp, n.alive ? 1 : 0]),
+        over, win: over && !player.alive ? false : over,
+      } : null);
+      drawRemotes(net.poses);
+      $("netline").textContent = `Online ${net.n}/${net.max}` + (net.isHost ? " · host" : " · guest");
+    }
   }
   for (let i = bolts.length - 1; i >= 0; i--) {
     const b = bolts[i];
