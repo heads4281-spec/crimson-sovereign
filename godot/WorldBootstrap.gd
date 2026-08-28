@@ -18,7 +18,9 @@ func _ready() -> void:
 			break
 	if not loaded_place:
 		push_warning("No place GLB found under %s" % asset_root)
-	_try_load("crimson_dragon_textured.glb", dragon_model_anchor, 1.0)
+	_try_load("crimson_dragon.glb", dragon_model_anchor, 1.0)
+	if not ResourceLoader.exists(asset_root + "crimson_dragon.glb"):
+		_try_load("crimson_dragon_textured.glb", dragon_model_anchor, 1.0)
 
 func _try_load(file_name: String, anchor: NodePath, scale: float) -> bool:
 	var path := asset_root + file_name

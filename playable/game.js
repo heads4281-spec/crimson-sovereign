@@ -1,6 +1,9 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { instanceRepeatedMeshes, makeBoltPool } from "./instancing.js";
+import { Loadout } from "./loadout.js";
+import { NpcDirector } from "./npc-director.js";
+import { makeSky } from "./sky.js";
 
 const $ = (id) => document.getElementById(id);
 const menu = $("menu"), help = $("help"), hud = $("hud"), statusEl = $("status"), endEl = $("end");
@@ -51,15 +54,7 @@ const fill = new THREE.PointLight(0xff4422, 40, 80, 1.4);
 fill.position.set(6, 10, 18);
 scene.add(fill);
 
-const sky = new THREE.Mesh(
-  new THREE.SphereGeometry(220, 32, 20),
-  new THREE.MeshStandardMaterial({
-    color: 0x3a1018, emissive: 0x220810, emissiveIntensity: 0.45,
-    roughness: 1, metalness: 0, side: THREE.BackSide, transparent: true, opacity: 0.78, depthWrite: false,
-  }),
-);
-sky.position.set(0, 40, 0);
-scene.add(sky);
+const sky = makeSky(scene);
 
 const keys = {};
 addEventListener("keydown", (e) => { keys[e.code] = true; if (e.code === "Space") e.preventDefault(); });
@@ -109,36 +104,9 @@ const wingR = wingL.clone();
   scene.add(dragon.mesh);
 }
 
-function fitHeight(root, h) {
-  const box = new THREE.Box3().setFromObject(root);
-  const size = box.getSize(new THREE.Vector3());
-  const s = h / Math.max(size.y, 0.001);
-  root.scale.multiplyScalar(s);
-  root.updateMatrixWorld(true);
-  const box2 = new THREE.Box3().setFromObject(root);
-  root.position.y -= box2.min.y;
-}
-
-function upgrade(root, keepColors) {
-  root.traverse((o) => {
-    if (!o.isMesh) return;
-    const geo = o.geometry;
-    const hasColor = !!(geo && geo.getAttribute && geo.getAttribute("color"));
-    const list = Array.isArray(o.material) ? o.material : [o.material];
-    list.forEach((m) => {
-      if (!m) return;
-      if (keepColors || hasColor) {
-        m.map = null;
-        m.emissiveMap = null;
-        m.vertexColors = true;
-        if (m.color) m.color.setHex(0xffffff);
-      }
-      if (m.emissive) m.emissive.setHex(0x4a1018);
-      m.emissiveIntensity = Math.max(m.emissiveIntensity || 0, 0.28);
-      m.needsUpdate = true;
-    });
-  });
-}
+const loadout = new Loadout(scene);
+const loader = new GLTFLoader();
+const npcs = new NpcDirector(scene, loader);
 
 const boltPool = makeBoltPool(64);
 scene.add(boltPool.mesh);
@@ -158,57 +126,35 @@ function blocked(next) {
 }
 
 async function loadOptional() {
-  const loader = new GLTFLoader();
-  const tryLoad = (path) => new Promise((resolve) => {
-    loader.load(path, (g) => resolve(g.scene), undefined, () => resolve(null));
-  });
-  const palace = await tryLoad("./models/dragon_palace.glb");
-  if (palace) {
-    upgrade(palace, true);
-    fitHeight(palace, 16);
-    palace.position.z = -6;
-    scene.add(palace);
-  }
-  const cat = await tryLoad("./models/crimson_cathedral.glb");
-  if (cat) {
-    upgrade(cat, true);
-    fitHeight(cat, 14);
-    cat.position.set(0, 0, -22);
-    scene.add(cat);
-  }
-  const hall = await tryLoad("./models/spiked_throne_hall.glb");
-  if (hall) {
-    upgrade(hall, true);
-    fitHeight(hall, 10);
-    hall.position.set(0, 0, -8);
-    scene.add(hall);
-  }
-  const field = await tryLoad("./models/obsidian_obelisk_field.glb");
-  if (field) {
-    upgrade(field, true);
-    fitHeight(field, 8);
-    field.position.set(0, 0, 28);
-    instanceRepeatedMeshes(field, 8);
-    scene.add(field);
-  }
-  const sovereign = await tryLoad("./models/fire_sovereign.glb");
-  if (sovereign) {
-    upgrade(sovereign, true);
-    fitHeight(sovereign, 1.72);
+  const catalog = await fetch("./catalog.json").then((r) => r.json()).catch(() => null);
+  if (!catalog) return;
+  await loadout.init(catalog);
+  await loadout.loadAllLevels({ instanceRepeatedMeshes });
+  const bodyOn = await loadout.equipCharacter("fire_sovereign", player.mesh);
+  if (bodyOn) {
     const fb = player.mesh.getObjectByName("fallbackBody");
     if (fb) fb.visible = false;
-    player.mesh.add(sovereign);
   }
-  const dr = await tryLoad("./models/crimson_dragon.glb");
-  if (dr) {
-    upgrade(dr, true);
-    dr.name = "crimson_dragon";
-    fitHeight(dr, 6.8);
-    dragon.mesh.children.slice().forEach((c) => {
-      if (c.name && c.name.startsWith("fallback")) c.visible = false;
-    });
-    dragon.mesh.add(dr);
+  await loadout.equipWeapon("hammer", player.mesh);
+  player.dmg = loadout.currentWeaponDamage();
+  const boss = catalog.bosses && catalog.bosses[0];
+  if (boss) {
+    const dr = await loadout.loadFile(boss.file);
+    if (dr) {
+      const { fitHeight } = await import("./loadout.js");
+      fitHeight(dr, boss.scale || 6.8);
+      dr.name = "crimson_dragon";
+      dragon.mesh.children.slice().forEach((c) => {
+        if (c.name && c.name.startsWith("fallback")) c.visible = false;
+      });
+      dragon.mesh.add(dr);
+    }
   }
+  await npcs.spawn("ankh_queen.glb", { x: -7, z: -10, h: 1.75, kind: "queen", hp: 90 });
+  await npcs.spawn("crimson_elf.glb", { x: 16, z: 12, h: 1.7, kind: "elf", hp: 70 });
+  await npcs.spawn("hooded_sorcerer_placeholder.glb", { x: -14, z: 10, h: 1.8, kind: "hooded", hp: 80 });
+  await npcs.spawn("obsidian_demon.glb", { x: 18, z: 6, h: 2.4, kind: "demon", hp: 120 });
+  await npcs.spawn("runic_sorceress.glb", { x: -12, z: 16, h: 1.85, kind: "sorceress", hp: 85 });
 }
 
 const clock = new THREE.Clock();
@@ -218,15 +164,25 @@ function end(win) {
   endEl.classList.remove("hidden");
   audio && (win ? audio.win() : audio.lose());
 }
+function hurtPlayer(amt) {
+  if (!player.alive) return;
+  player.hp = Math.max(0, player.hp - amt);
+  $("php").textContent = player.hp;
+  audio && audio.hit();
+  if (player.hp <= 0) { player.alive = false; end(false); }
+}
 function attack() {
   if (player.cd > 0 || !player.alive) return;
   player.cd = 0.45;
+  let hit = false;
   if (player.mesh.position.distanceTo(dragon.mesh.position) <= player.range + 1.2 && dragon.alive) {
     dragon.hp = Math.max(0, dragon.hp - player.dmg);
     $("dhp").textContent = dragon.hp;
-    audio && audio.hit();
+    hit = true;
     if (dragon.hp <= 0) { dragon.alive = false; end(true); }
   }
+  if (npcs.strike(player.mesh.position, player.range, player.dmg)) hit = true;
+  if (hit) audio && audio.hit();
 }
 function tickDragon(dt) {
   const flap = Math.sin(performance.now() * 0.012) * 0.35;
@@ -258,11 +214,8 @@ function tickDragon(dt) {
   );
   dragon.mesh.lookAt(player.mesh.position.x, dragon.mesh.position.y, player.mesh.position.z);
   if (dist < 4.6 && dragon.biteCd <= 0) {
-    player.hp = Math.max(0, player.hp - 28);
-    $("php").textContent = player.hp;
+    hurtPlayer(28);
     dragon.biteCd = 1.4;
-    audio && audio.hit();
-    if (player.hp <= 0) { player.alive = false; end(false); }
   } else if (dist < 18 && dist > 6 && dragon.spitCd <= 0) {
     spit();
     dragon.spitCd = 2.1;
@@ -272,6 +225,7 @@ function tickDragon(dt) {
 function loop() {
   requestAnimationFrame(loop);
   const dt = Math.min(clock.getDelta(), 0.05);
+  sky.tick(dt);
   if (started && !over && player.alive) {
     player.cd = Math.max(0, player.cd - dt);
     const move = new THREE.Vector3((keys.KeyD ? 1 : 0) - (keys.KeyA ? 1 : 0), 0, (keys.KeyS ? 1 : 0) - (keys.KeyW ? 1 : 0));
@@ -282,16 +236,15 @@ function loop() {
     }
     if (keys.Space) attack();
     tickDragon(dt);
+    npcs.tick(dt, player.mesh.position, hurtPlayer);
   }
   for (let i = bolts.length - 1; i >= 0; i--) {
     const b = bolts[i];
     b.life -= dt;
     b.pos.addScaledVector(b.dir, 22 * dt);
     if (player.alive && started && b.pos.distanceTo(player.mesh.position) < 0.9) {
-      player.hp = Math.max(0, player.hp - 16);
-      $("php").textContent = player.hp;
-      bolts.splice(i, 1); audio && audio.hit();
-      if (player.hp <= 0) { player.alive = false; end(false); }
+      hurtPlayer(16);
+      bolts.splice(i, 1);
       continue;
     }
     if (b.life <= 0) bolts.splice(i, 1);

@@ -2,14 +2,19 @@
   "version": 1,
   "characters": [
     { "id": "fire_sovereign", "file": "fire_sovereign.glb", "display_name": "Fire Sovereign", "enabled": true, "role": "player", "scale": 1.0 },
-    { "id": "crimson_dragon", "file": "crimson_dragon_textured.glb", "display_name": "Cathedral Dragon", "enabled": true, "role": "enemy_boss", "scale": 2.5 }
+    { "id": "crimson_dragon", "file": "crimson_dragon.glb", "display_name": "Crimson Dragon", "enabled": true, "role": "enemy_boss", "scale": 2.5 }
   ],
   "weapons": [
     { "id": "sword", "file": "crimson_sovereign_sword.glb", "display_name": "Crimson Sovereign Sword", "enabled": true, "slot": "melee", "damage": 34 },
-    { "id": "hammer", "file": "crimson_sovereign_hammer.glb", "display_name": "Sovereign Hammer", "enabled": true, "slot": "melee", "damage": 48 }
+    { "id": "hammer", "file": "crimson_sovereign_hammer.glb", "display_name": "Sovereign Hammer", "enabled": true, "slot": "melee", "damage": 48 },
+    { "id": "axe", "file": "crimson_ankh_axe.glb", "enabled": true, "slot": "melee", "damage": 40 },
+    { "id": "staff", "file": "ankh_flame_staff.glb", "enabled": true, "slot": "magic", "damage": 28 },
+    { "id": "smg", "file": "rune_smg.glb", "enabled": true, "slot": "ranged", "damage": 18 }
   ],
   "levels": [
     { "id": "throne_hall", "file": "spiked_throne_hall.glb", "display_name": "Spiked Throne Hall", "enabled": true },
-    { "id": "dragon_palace", "file": "dragon_palace.glb", "display_name": "Dragon Palace", "enabled": true }
+    { "id": "dragon_palace", "file": "dragon_palace.glb", "display_name": "Dragon Palace", "enabled": true },
+    { "id": "cathedral", "file": "crimson_cathedral.glb", "enabled": true },
+    { "id": "obelisk_field", "file": "obsidian_obelisk_field_instanced.glb", "enabled": true }
   ]
 }

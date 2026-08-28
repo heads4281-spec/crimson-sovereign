@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "characters": [
+    { "id": "fire_sovereign", "file": "fire_sovereign.glb", "display_name": "Fire Sovereign", "enabled": true, "role": "player", "scale": 1.72 },
+    { "id": "ankh_queen", "file": "ankh_queen.glb", "display_name": "Ankh Queen", "enabled": true, "role": "npc", "scale": 1.75 },
+    { "id": "crimson_elf", "file": "crimson_elf.glb", "display_name": "Crimson Elf", "enabled": true, "role": "npc", "scale": 1.7 },
+    { "id": "hooded", "file": "hooded_sorcerer_placeholder.glb", "display_name": "Hooded Sorcerer", "enabled": true, "role": "npc", "scale": 1.8 },
+    { "id": "obsidian_demon", "file": "obsidian_demon.glb", "display_name": "Obsidian Demon", "enabled": true, "role": "npc", "scale": 2.4 },
+    { "id": "runic_sorceress", "file": "runic_sorceress.glb", "display_name": "Runic Sorceress", "enabled": true, "role": "npc", "scale": 1.85 }
+  ],
+  "bosses": [
+    { "id": "crimson_dragon", "file": "crimson_dragon.glb", "display_name": "Crimson Dragon", "enabled": true, "role": "enemy_boss", "scale": 6.8 }
+  ],
+  "weapons": [
+    { "id": "sword", "file": "crimson_sovereign_sword.glb", "enabled": true, "slot": "melee", "damage": 34 },
+    { "id": "hammer", "file": "crimson_sovereign_hammer.glb", "enabled": true, "slot": "melee", "damage": 48 },
+    { "id": "axe", "file": "crimson_ankh_axe.glb", "enabled": true, "slot": "melee", "damage": 40 },
+    { "id": "scepter", "file": "crystal_ring_scepter.glb", "enabled": true, "slot": "melee", "damage": 22 },
+    { "id": "staff", "file": "ankh_flame_staff.glb", "enabled": true, "slot": "magic", "damage": 28 },
+    { "id": "cannon", "file": "hieroglyph_cannon.glb", "enabled": true, "slot": "ranged", "damage": 36 },
+    { "id": "sniper", "file": "ankh_sniper.glb", "enabled": true, "slot": "ranged", "damage": 44 },
+    { "id": "beam", "file": "dual_beam_rifle.glb", "enabled": true, "slot": "ranged", "damage": 30 },
+    { "id": "smg", "file": "rune_smg.glb", "enabled": true, "slot": "ranged", "damage": 18 }
+  ],
+  "levels": [
+    { "id": "dragon_palace", "file": "dragon_palace.glb", "enabled": true, "height": 16, "z": -6 },
+    { "id": "throne_hall", "file": "spiked_throne_hall.glb", "enabled": true, "height": 10, "z": -8 },
+    { "id": "cathedral", "file": "crimson_cathedral.glb", "enabled": true, "height": 14, "z": -22 },
+    { "id": "cathedral_interior", "file": "crimson_cathedral_interior.glb", "enabled": true, "height": 12, "z": -18 },
+    { "id": "obelisk_field", "file": "obsidian_obelisk_field.glb", "enabled": true, "height": 8, "z": 28, "instance": true }
+  ],
+  "props": [
+    { "id": "ritual_group", "file": "enemy_ritual_group.glb", "enabled": true, "height": 2.2, "x": 10, "z": 40 }
+  ]
+}
