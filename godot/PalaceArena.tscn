@@ -1,0 +1,47 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/PalaceLevel.gd" id="1_palace"]
+[ext_resource type="Script" path="res://scripts/DragonNPC.gd" id="2_dragon"]
+[ext_resource type="Script" path="res://scripts/PlayerCombat.gd" id="3_player"]
+
+[sub_resource type="BoxShape3D" id="floor"]
+size = Vector3(40, 0.4, 40)
+
+[sub_resource type="CapsuleShape3D" id="player_shape"]
+radius = 0.4
+height = 1.6
+
+[sub_resource type="BoxShape3D" id="dragon_shape"]
+size = Vector3(3.2, 2.4, 4.6)
+
+[node name="PalaceArena" type="Node3D"]
+script = ExtResource("1_palace")
+player_path = NodePath("Player")
+dragon_path = NodePath("Dragon")
+
+[node name="Floor" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2, 0)
+shape = SubResource("floor")
+
+[node name="PalaceAnchor" type="Node3D" parent="."]
+
+[node name="Player" type="CharacterBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 8)
+script = ExtResource("3_player")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
+shape = SubResource("player_shape")
+
+[node name="Camera3D" type="Camera3D" parent="Player"]
+transform = Transform3D(1, 0, 0, 0, 0.92, 0.39, 0, -0.39, 0.92, 0, 2.4, 6.5)
+
+[node name="Dragon" type="CharacterBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10.2, 0)
+script = ExtResource("2_dragon")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Dragon"]
+shape = SubResource("dragon_shape")
+
+[node name="Model" type="Node3D" parent="Dragon"]
