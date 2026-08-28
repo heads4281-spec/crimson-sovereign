@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://scripts/GameManager.gd" id="1_gm"]
 [ext_resource type="Script" path="res://scripts/PalaceLevel.gd" id="2_palace"]
@@ -6,9 +6,12 @@
 [ext_resource type="Script" path="res://scripts/PlayerCombat.gd" id="4_player"]
 [ext_resource type="Script" path="res://scripts/GameHUD.gd" id="5_hud"]
 [ext_resource type="Script" path="res://scripts/WeaponHold.gd" id="6_weapon"]
+[ext_resource type="Script" path="res://scripts/SkyDome.gd" id="7_sky"]
+[ext_resource type="Script" path="res://scripts/NpcDirector.gd" id="8_ai"]
+[ext_resource type="Script" path="res://scripts/WorldBootstrap.gd" id="9_boot"]
 
 [sub_resource type="BoxShape3D" id="floor"]
-size = Vector3(50, 0.4, 50)
+size = Vector3(80, 0.4, 80)
 
 [sub_resource type="CapsuleShape3D" id="player_shape"]
 radius = 0.4
@@ -19,11 +22,26 @@ size = Vector3(3.2, 2.4, 4.6)
 
 [node name="Main" type="Node3D"]
 
+[node name="WorldBootstrap" type="Node" parent="."]
+script = ExtResource("9_boot")
+sky_anchor = NodePath("../Sky/Model")
+place_anchor = NodePath("../Palace/PalaceAnchor")
+dragon_model_anchor = NodePath("../Palace/Dragon/Model")
+
 [node name="GameManager" type="Node" parent="."]
 script = ExtResource("1_gm")
 player_path = NodePath("../Palace/Player")
 dragon_path = NodePath("../Palace/Dragon")
 palace_path = NodePath("../Palace")
+
+[node name="NpcDirector" type="Node" parent="."]
+script = ExtResource("8_ai")
+player_path = NodePath("../Palace/Player")
+
+[node name="Sky" type="Node3D" parent="."]
+script = ExtResource("7_sky")
+
+[node name="Model" type="Node3D" parent="Sky"]
 
 [node name="Palace" type="Node3D" parent="."]
 script = ExtResource("2_palace")
@@ -71,7 +89,7 @@ manager_path = NodePath("../GameManager")
 [node name="Root" type="VBoxContainer" parent="HUD"]
 offset_left = 24.0
 offset_top = 20.0
-offset_right = 480.0
+offset_right = 520.0
 offset_bottom = 140.0
 
 [node name="PlayerHP" type="Label" parent="HUD/Root"]
@@ -82,8 +100,3 @@ text = "Dragon  420 / 420"
 
 [node name="Status" type="Label" parent="HUD/Root"]
 text = "Enter the palace."
-
-[node name="Sun" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.86, -0.35, 0.37, 0, 0.73, 0.68, -0.5, -0.59, 0.63, 0, 12, 0)
-light_color = Color(1, 0.52, 0.42, 1)
-light_energy = 1.35
