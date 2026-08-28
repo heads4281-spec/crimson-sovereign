@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "characters": [
+    { "id": "fire_sovereign", "file": "fire_sovereign.glb", "display_name": "Fire Sovereign", "enabled": true, "role": "player", "scale": 1.0 },
+    { "id": "crimson_dragon", "file": "crimson_dragon_textured.glb", "display_name": "Cathedral Dragon", "enabled": true, "role": "enemy_boss", "scale": 2.5 }
+  ],
+  "weapons": [
+    { "id": "sword", "file": "crimson_sovereign_sword.glb", "display_name": "Crimson Sovereign Sword", "enabled": true, "slot": "melee", "damage": 34 },
+    { "id": "hammer", "file": "crimson_sovereign_hammer.glb", "display_name": "Sovereign Hammer", "enabled": true, "slot": "melee", "damage": 48 }
+  ],
+  "levels": [
+    { "id": "throne_hall", "file": "spiked_throne_hall.glb", "display_name": "Spiked Throne Hall", "enabled": true },
+    { "id": "dragon_palace", "file": "dragon_palace.glb", "display_name": "Dragon Palace", "enabled": true }
+  ]
+}
